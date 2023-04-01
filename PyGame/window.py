@@ -7,6 +7,7 @@ pygame.display.set_caption('Experiementing w/ PyGame')
 # Creating the background and screen of Game
 screen = pygame.display.set_mode((800, 400))
 clock = pygame.time.Clock()
+game_active = True
 
 # Font
 test_font = pygame.font.Font('font/joystix.ttf', 30)
@@ -37,36 +38,43 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
-        if event.type == pygame.MOUSEBUTTONDOWN:
-             if player_rect.collidepoint(event.pos): player_gravity = -20
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE and player_rect.bottom == 325:
-                player_gravity = -20
+        if game_active:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if player_rect.collidepoint(event.pos): player_gravity = -20
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE and player_rect.bottom == 325:
+                    player_gravity = -20
+        else:
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                game_active = True
+                spirit_rect.x = 800
+
+    if game_active:
+        # displaying the surfaces
+        screen.blit(background_surface,(0,0))
+        screen.blit(newGround_surface,(0,300))
+        pygame.draw.rect(screen,'#c0e8ec',score_rect)
+        pygame.draw.rect(screen,'#c0e8ec',score_rect,20)
+        screen.blit(text_surf,(300,30))
+        screen.blit(score_surf,score_rect)
 
 
-    # displaying the surfaces
-    screen.blit(background_surface,(0,0))
-    screen.blit(newGround_surface,(0,300))
-    pygame.draw.rect(screen,'#c0e8ec',score_rect)
-    pygame.draw.rect(screen,'#c0e8ec',score_rect,20)
-    screen.blit(text_surf,(300,30))
-    screen.blit(score_surf,score_rect)
+        # Player
+        player_gravity += 1
+        player_rect.y += player_gravity
+        if player_rect.bottom >= 325: player_rect.bottom=325
+        screen.blit(player_surf,player_rect)
+    
+        # Spirit
+        screen.blit(spirit_surf,spirit_rect)
+        spirit_rect.x -= 2 
+        if spirit_rect.right <= 0: spirit_rect.left = 800
 
-
-    # Player
-    player_gravity += 1
-    player_rect.y += player_gravity
-    if player_rect.bottom >= 325: player_rect.bottom=325
-    screen.blit(player_surf,player_rect)
-   
-    # Spirit
-    screen.blit(spirit_surf,spirit_rect)
-    spirit_rect.x -= 2 
-    if spirit_rect.right <= 0: spirit_rect.left = 800
-
-    # Collisions
-
-
+        # Collisions
+        if spirit_rect.colliderect(player_rect):
+            game_active = False
+    else:
+        screen.fill('red')
 
     pygame.display.update()
     clock.tick(60) # maximum frames per second
