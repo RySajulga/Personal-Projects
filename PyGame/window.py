@@ -1,6 +1,12 @@
 import pygame
 from sys import exit
 
+def display_score():
+    current_time = int(pygame.time.get_ticks() / 500) - start_time
+    score_surf = test_font.render(f'Score: {current_time}',False,(64,64,64))
+    score_rect = score_surf.get_rect(center = (400,50))
+    screen.blit(score_surf,score_rect)
+
 pygame.init()
 pygame.display.set_caption('Experiementing w/ PyGame')
 
@@ -8,10 +14,12 @@ pygame.display.set_caption('Experiementing w/ PyGame')
 screen = pygame.display.set_mode((800, 400))
 clock = pygame.time.Clock()
 game_active = True
+start_time = 0
+
 
 # Font
 test_font = pygame.font.Font('font/joystix.ttf', 30)
-score_font = pygame.font.Font('font/joystix.ttf', 20)
+#score_font = pygame.font.Font('font/joystix.ttf', 20)
 
 # Surfaces
 background_surface = pygame.Surface((800,400))
@@ -20,9 +28,8 @@ ground_surface = pygame.image.load('graphics/pixel-ground.png')
 newGround_surface = pygame.transform.scale(ground_surface, (800,150))
 
 # Text Boxes
-text_surf = test_font.render("My Game", False, (64,64,64)) 
-score_surf = test_font.render("Score", False, 'Black')
-score_rect = score_surf.get_rect(center = (70,30))
+# score_surf = test_font.render("My Game", False, (64,64,64)) 
+# score_rect = score_surf.get_rect(center = (400,50))
 
 # Sprites
 spirit_surf = pygame.image.load('graphics/spirit/idle/0.png').convert_alpha()
@@ -48,15 +55,16 @@ while True:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_active = True
                 spirit_rect.x = 800
+                start_time = int(pygame.time.get_ticks() / 500)
 
     if game_active:
         # displaying the surfaces
         screen.blit(background_surface,(0,0))
         screen.blit(newGround_surface,(0,300))
-        pygame.draw.rect(screen,'#c0e8ec',score_rect)
-        pygame.draw.rect(screen,'#c0e8ec',score_rect,20)
-        screen.blit(text_surf,(300,30))
-        screen.blit(score_surf,score_rect)
+        # pygame.draw.rect(screen,'#c0e8ec',score_rect)
+        # pygame.draw.rect(screen,'#c0e8ec',score_rect,20)
+        # screen.blit(score_surf,score_rect)
+        display_score()
 
 
         # Player
@@ -67,14 +75,14 @@ while True:
     
         # Spirit
         screen.blit(spirit_surf,spirit_rect)
-        spirit_rect.x -= 2 
+        spirit_rect.x -= 5 
         if spirit_rect.right <= 0: spirit_rect.left = 800
 
         # Collisions
         if spirit_rect.colliderect(player_rect):
             game_active = False
     else:
-        screen.fill('red')
+        screen.fill((94,129,162))
 
     pygame.display.update()
-    clock.tick(60) # maximum frames per second
+    clock.tick(60) # maximum frames per secon
